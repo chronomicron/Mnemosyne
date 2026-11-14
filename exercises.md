@@ -293,6 +293,8 @@ Keep these separate from reasoning/memory outcomes because they also depend on h
 
 **K8. Pantomime the Action** — Ask the player to show how they would perform a familiar action, such as brushing teeth, using a comb, or pouring a drink. A caregiver may confirm completion; camera analysis is optional. *Measures:* action sequence, prompts, and response method.
 
+**K9. Guide the Mercury Drop** — Show a large, liquid-looking bubble or droplet in a shallow maze. The player tilts the tablet to guide it along a wide path into a bucket or other clear goal. Start with a short, forgiving route; later versions can add gentle turns, wider/narrower sections, or a few safe obstacles. Calibrate a neutral holding angle at the start, use a comfortable tilt range, and provide a touch-control alternative or skip option. *Measures:* completion, elapsed time, path deviation, wall contacts, pauses, reversals, and tilt range/smoothness. Treat movement data separately from reasoning or memory results because it also depends on hand comfort and ability to hold the device. Use device-orientation sensing (such as Android's rotation-vector or accelerometer data); a gyroscope can supplement motion sensing but should not be the sole source for sustained tilt angle because integrated gyro readings drift.
+
 ## L. Social cognition and emotion games
 
 These are optional, culturally adaptable activities. Use clear, non-trick scenarios and record the content set because social conventions and expressions vary.
