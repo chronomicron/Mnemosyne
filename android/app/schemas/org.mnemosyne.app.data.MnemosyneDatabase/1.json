@@ -1,0 +1,96 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "e9ef98decb0fbd3e408b5789cf025477",
+    "entities": [
+      {
+        "tableName": "game_sessions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`session_id` TEXT NOT NULL, `game_id` TEXT NOT NULL, `started_at_epoch_millis` INTEGER NOT NULL, `finished_at_epoch_millis` INTEGER, `duration_millis` INTEGER, `finish_status` TEXT, `tasks_attempted` INTEGER NOT NULL, `tasks_succeeded` INTEGER NOT NULL, `tasks_missed` INTEGER NOT NULL, PRIMARY KEY(`session_id`))",
+        "fields": [
+          {
+            "fieldPath": "sessionId",
+            "columnName": "session_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "gameId",
+            "columnName": "game_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startedAtEpochMillis",
+            "columnName": "started_at_epoch_millis",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "finishedAtEpochMillis",
+            "columnName": "finished_at_epoch_millis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "durationMillis",
+            "columnName": "duration_millis",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "finishStatus",
+            "columnName": "finish_status",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tasksAttempted",
+            "columnName": "tasks_attempted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tasksSucceeded",
+            "columnName": "tasks_succeeded",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tasksMissed",
+            "columnName": "tasks_missed",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "session_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_game_sessions_game_id",
+            "unique": false,
+            "columnNames": [
+              "game_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_game_sessions_game_id` ON `${TABLE_NAME}` (`game_id`)"
+          },
+          {
+            "name": "index_game_sessions_started_at_epoch_millis",
+            "unique": false,
+            "columnNames": [
+              "started_at_epoch_millis"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_game_sessions_started_at_epoch_millis` ON `${TABLE_NAME}` (`started_at_epoch_millis`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e9ef98decb0fbd3e408b5789cf025477')"
+    ]
+  }
+}
