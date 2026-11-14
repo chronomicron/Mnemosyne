@@ -8,11 +8,14 @@ This is a working guide, not a fixed architecture or a promise that every brains
 
 ## Product shape
 
-- **MindSteps from Mnemosyne** runs on the senior's tablet. It offers approachable games and exercises, works offline where practical, and records performance by activity and skill area over time.
-- **KinBridge from Mnemosyne** runs on the primary caregiver's phone. It helps the caregiver stay connected, coordinate support, and review the information the senior has chosen or authorized to share.
-- **Mnemosyne desktop** supports social workers, nurses, or care teams reviewing an assigned group of seniors, potentially around a dozen people. Each person's information must remain distinct and access must be limited to the worker's assigned caseload.
+- **Suite-level audience:** Mnemosyne is primarily intended to help the caregiver, who may purchase the service, organize setup, and manage sharing. Keep the senior's direct experience in MindSteps simple and welcoming; do not confuse the person who buys/configures the suite with the person using the tablet day to day.
+- **MindSteps from Mnemosyne** is planned as an Android app for the senior, primarily on a carried tablet, with future iOS support kept possible. It offers approachable games and exercises, records performance by activity and skill area, supports caregiver-scheduled periodic activity sets and simple offline reminders, and uses the carried device for resident-side GPS/location support, route prompts, caregiver check-ins, voice messages, and intercom. Preserve game progress and keep the senior-facing flow predictable and non-interruptive. Keep the senior's controls simple while making authorized statistics and location events available to the caregiver through KinBridge.
+- **KinBridge from Mnemosyne** is planned as an Android and iOS phone app for the primary caregiver. It helps the caregiver set up resident profiles and familiar places/routes, review authorized location and activity information, receive relevant alerts, and send voice messages or start an intercom with the senior using MindSteps.
+- **Mnemosyne desktop** is planned as a browser-based web app for social workers, nurses, or care teams reviewing an assigned group of seniors, potentially around a dozen people. Each person's information must remain distinct and access must be limited to the worker's assigned caseload. Care professionals can also use the desktop app to send resident-specific updates and information to authorized caregivers through KinBridge.
 
-These are related products with separate user experiences. They should exchange information through documented interfaces and formats, not depend on sharing one large codebase or exposing every record to every app. Each should remain useful on its own.
+These are related products with separate user experiences. Android and Apple mobile apps will be separately built and installed; whether they share UI or logic is an open engineering decision. They should exchange information through documented interfaces and formats, not depend on sharing one large codebase or exposing every record to every app. Each should remain useful on its own.
+
+Institution-to-caregiver communication should be a secure, resident-specific workflow: an authorized care professional selects the resident, prepares an update in the desktop app, and shares it with the caregiver or caregivers authorized for that resident in KinBridge. A fall report is a key example: “Alice fell at 10:15 a.m.; no injury was noted; staff are monitoring her.” Record when it happened (if known), when it was entered, who observed or reported it, the resident’s reported condition, any injury details or unknown status, and the residence’s follow-up plan or next update. Keep the report attributed to its source and attached to the correct resident record, with delivery status visible. The channel can provide a written update alongside the residence’s usual phone contact when appropriate. Avoid exposing sensitive details in lock-screen notifications. The message types, attachments, and whether caregivers can reply or acknowledge updates remain to be designed.
 
 ## Development ethos
 
@@ -36,11 +39,15 @@ Agree on what each measure means before building charts or sharing results. For 
 - Interaction mode and relevant conditions, such as playback speed, input method, retries, hints, or interruptions when available.
 - Schema version and provenance, so future versions can import old records and tell who or what created them.
 
-Prefer a documented, versioned data contract. Begin with a reliable local export/import path if that meets the need; add automatic synchronization when the user experience justifies it. Make transfers retryable and safe to repeat, and plan how the apps handle duplicates, partial transfers, offline use, and schema upgrades. Never silently discard records when an import or migration fails.
+Prefer a documented, versioned data contract. Begin with a reliable local export/import path if that meets the need; add automatic synchronization when the user experience justifies it. Make transfers retryable and safe to repeat, and plan how the apps handle duplicates, partial transfers, offline use, and schema upgrades. Never silently discard records when an import or migration fails. Use encrypted transport for client and service communication, and encrypt sensitive records at rest. For live intercom audio, prioritize low latency using built-in real-time media protection; evaluate any additional encryption layer against measured latency and its security benefit.
+
+The products must be able to interpret and exchange the same authorized information across Android phones/tablets, future iPhones, and the desktop web app. Treat this as one shared data model and transfer contract, not one SQLite database file copied among platforms. Each installed app can use storage suited to its platform; the records it reads and writes must preserve the same field meanings, identifiers, timestamps, units, and versions. When automatic sharing is introduced, route it through a documented service/API used by all clients. Until then, keep the local Android model portable and define exports/imports against that future contract. The service choice, exact format, and sync design remain open.
+
+For transfers and sync, require globally unique profile and record IDs, UTC timestamps, a schema version, source/app provenance, and stable activity/form versions. Uploads should be safe to retry without creating duplicate records; devices should retain pending data while offline and mark it synchronized only after acknowledgement. Resolve authorization on the service for each profile and operation rather than relying on client-side filtering.
 
 ### 4. Build security and privacy into ordinary engineering
 
-Collect only what a feature needs. Keep personal records local when possible, protect data in storage and transfer, authenticate users, and give each role only the access needed for its work. Make pairing and sharing deliberate, visible, and revocable. Keep access to one resident separate from another's, especially in the desktop caseload view.
+Privacy and security are foundational product requirements, not polish to add later. Smooth operation and low latency must be designed alongside protection of sensitive information, not by weakening it. Collect only what a feature needs. Keep personal records local when possible, protect data in storage and transfer, authenticate users, and give each role only the access needed for its work. Make pairing and sharing deliberate, visible, and revocable. Keep access to one resident separate from another's, especially in the desktop caseload view.
 
 Operational logs and analytics are not the resident's activity history. Keep them separate, minimize or redact identifying details, control retention, and do not route resident activity data into external analytics by default. A choice to stop sharing must also stop future transmission through logs, analytics, exports, or notifications where relevant.
 
@@ -84,7 +91,7 @@ Plan database migrations and data-format changes so older records remain readabl
 
 ## Current development sequence
 
-1. Continue the local Android prototype and learn from installing it on an emulator and the TCL 502 phone.
+1. Continue the local Android prototype and test it on an emulator, the TCL 502 phone, and an Android tablet. Keep future iPhone support possible by isolating platform-specific UI, storage, and sensor access from activity rules and portable data definitions.
 2. Expand MindSteps activities and record the per-activity results needed for personal trends, including task/version details and timing where relevant.
 3. Define and document the shared, versioned data format before multiple apps rely on it.
 4. Build a first export/import workflow and a caregiver-facing view in KinBridge or the desktop app.
